@@ -1,38 +1,116 @@
-# cafeApp
+# 🎨 Cafe Management System – Vue 3 Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+A modern, responsive frontend application for the Cafe Management System, built with Vue 3, Vite, and Bootstrap. Features a beautiful gradient-themed interface with role-based navigation and real-time feedback.
 
-## Recommended IDE Setup
+---
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## ✨ Features
 
-## Recommended Browser Setup
+### 🖼️ Modern User Interface
+- Beautiful, responsive design using Bootstrap 5
+- Gradient-themed pages with smooth transitions
+- Elegant modals and alert notifications
+- Mobile-first approach for all screen sizes
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+### 🧭 Smart Navigation
+- Dynamic navigation based on user roles (Customer/Staff/Admin)
+- Context-aware menu items
+- Seamless routing with Vue Router
+- Protected routes for authenticated users
 
-## Customize configuration
+### 💬 Real-Time Feedback
+- Instant UI updates for all operations
+- Loading states for async operations
+- Success and error notifications
+- Smooth animations and transitions
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### 🛒 Shopping Experience
+- Interactive cart management
+- Live total calculations
+- Quick checkout process
+- Item availability indicators
 
-## Project Setup
+### 👨‍🍳 Staff Dashboard
+- Menu item management interface
+- Order monitoring and control
+- Global ordering toggle
+- Analytics and reporting views
 
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Vue 3** | Latest | Progressive JavaScript framework |
+| **Vite** | Latest | Next-generation frontend tooling |
+| **Vue Router** | 4.x | Official router for Vue.js |
+| **Bootstrap** | 5.x | Responsive UI framework |
+| **Axios** | Latest | HTTP client for API calls |
+| **Pinia** | Latest | State management (if used) |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 16.x or higher
+- npm or yarn package manager
+- Backend API running (see backend README)
+
+### Installation
+
+**1. Navigate to the frontend directory**
+```sh
+cd frontend
+```
+
+**2. Install dependencies**
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
 
+**3. Start development server**
 ```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+The application will be available at `http://localhost:5173`
 
+**4. Build for production**
 ```sh
 npm run build
 ```
+
+## 🌐 Browser Setup
+
+### Chrome / Edge / Brave (Chromium-based)
+
+1. Install [Vue.js DevTools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+2. Enable Custom Object Formatter:
+   - Open DevTools (F12)
+   - Go to Settings (⚙️)
+   - Check "Enable custom formatters"
+   - [Quick Guide](http://bit.ly/object-formatters)
+
+### Firefox
+
+1. Install [Vue.js DevTools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+2. Enable Custom Object Formatter:
+   - Follow [this guide](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+
+---
+
+## 📚 Resources
+
+- [Vue 3 Documentation](https://vuejs.org/)
+- [Vite Documentation](https://vite.dev/)
+- [Vue Router Documentation](https://router.vuejs.org/)
+- [Bootstrap Documentation](https://getbootstrap.com/)
+- [Vue DevTools Guide](https://devtools.vuejs.org/)
+
+
+---
+
+**Crafted with 💚 using Vue 3 and Vite**
