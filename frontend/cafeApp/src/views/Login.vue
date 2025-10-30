@@ -6,7 +6,7 @@
           <div class="card login-card shadow-lg">
             <div class="card-body p-5">
               <div class="text-center mb-4">
-                <i class="bi bi-cup-hot-fill display-3 text-primary"></i>
+                <img src="@/assets/logo/images.jpeg" alt="Cafe Logo" width="80" height="80" class="d-inline-block align-text-top me-2">
                 <h2 class="mt-3 fw-bold">Cafe Login</h2>
                 <p class="text-muted">Welcome back!</p>
               </div>
@@ -123,7 +123,7 @@ const handleLogin = async () => {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #16171f;
 }
 
 .login-card {
@@ -148,13 +148,14 @@ const handleLogin = async () => {
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background-color: #16171f;
   border: none;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
+  background-color: #0d0e13;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(22, 23, 31, 0.4);
 }
 </style>

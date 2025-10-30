@@ -1,10 +1,5 @@
 <template>
   <div class="orders-page">
-    <div class="decor">
-      <div class="blob blob-a"></div>
-      <div class="blob blob-b"></div>
-      <div class="blob blob-c"></div>
-    </div>
 
     <div class="container py-5" style="position:relative; z-index:10;">
       <div class="row align-items-center mb-5">
@@ -19,7 +14,7 @@
             </div>
             <div>
               <small class="d-block text-muted fw-semibold">Total Orders</small>
-              <strong class="h4 mb-0 text-primary">{{ orders.length }}</strong>
+              <strong class="h4 mb-0">{{ orders.length }}</strong>
             </div>
           </div>
         </div>
@@ -72,7 +67,7 @@
 
             <div class="card-body p-4">
               <div class="items-header mb-3">
-                <i class="bi bi-basket me-2 text-primary fs-5"></i>
+                <i class="bi bi-basket me-2 fs-5"></i>
                 <small class="text-muted text-uppercase fw-semibold fs-6">Items ({{ order.items.length }})</small>
               </div>
 
@@ -86,7 +81,7 @@
                     </div>
                   </div>
                   <div class="item-price text-end">
-                    <div class="fw-bold text-primary fs-5">₹{{ (it.price * it.quantity).toFixed(2) }}</div>
+                    <div class="fw-bold fs-5">₹{{ (it.price * it.quantity).toFixed(2) }}</div>
                     <small class="text-muted fs-6">₹{{ it.price.toFixed(2) }} each</small>
                   </div>
                 </li>
@@ -95,7 +90,7 @@
               <div class="order-meta row g-2">
                 <div class="col-7">
                   <div class="meta-box bg-light rounded-3 p-3 h-100">
-                    <i class="bi bi-calendar-event text-primary me-2 fs-5"></i>
+                    <i class="bi bi-calendar-event me-2 fs-5"></i>
                     <small class="text-muted d-block mb-1 fs-6">Placed On</small>
                     <div class="small fw-semibold fs-6">{{ formatDate(order.created_at) }}</div>
                   </div>
@@ -175,9 +170,10 @@ export default {
 </script>
 
 <style scoped>
+
 .orders-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16171f;
   position: relative;
   overflow: hidden;
   padding-bottom: 4rem;
@@ -251,7 +247,7 @@ export default {
 .stats-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -311,7 +307,7 @@ export default {
 }
 
 .order-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #424242;
   padding: 1.25rem 1.5rem;
   position: relative;
   overflow: hidden;
@@ -418,7 +414,7 @@ export default {
 .quantity-badge {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   color: white;
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
@@ -442,7 +438,7 @@ export default {
 }
 
 .meta-box:hover {
-  border-color: #667eea;
+  border-color: #222222;
   transform: scale(1.03);
 }
 

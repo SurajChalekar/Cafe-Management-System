@@ -1,10 +1,5 @@
 <template>
   <div class="orders-container">
-    <div class="decor">
-      <div class="blob blob-a"></div>
-      <div class="blob blob-b"></div>
-      <div class="blob blob-c"></div>
-    </div>
 
     <div class="container py-5" style="position: relative; z-index: 10;">
       <div class="text-center mb-5 animate-fade-in">
@@ -13,22 +8,66 @@
           Active Orders
         </h1>
         <p class="lead text-white-50 fs-4">Manage and update order status</p>
+        <p class="fs-5 text-warning mt-2">
+          Pending Orders: <strong>{{ pendingCount }}</strong>
+        </p>
       </div>
 
-      <div class="mb-5 text-center">
+      <div class="mb-5 text-center d-flex justify-content-center gap-3 flex-wrap align-items-center">
         <button @click="toggleGlobalOrders"
           :class="['btn', 'btn-lg', 'shadow-lg', 'toggle-btn', 'px-5', 'py-3', 'rounded-pill', allowOrders ? 'btn-danger' : 'btn-success']">
           <i :class="allowOrders ? 'bi bi-x-circle me-2 fs-5' : 'bi bi-check-circle me-2 fs-5'"></i>
           <span class="fs-5 fw-bold">{{ allowOrders ? 'Disable Orders' : 'Enable Orders' }}</span>
         </button>
+        <button @click="toggleAllOrders"
+          class="btn btn-lg shadow-lg toggle-btn px-5 py-3 rounded-pill btn-light">
+          <i :class="allExpanded ? 'bi bi-arrows-collapse me-2 fs-5' : 'bi bi-arrows-expand me-2 fs-5'"></i>
+          <span class="fs-5 fw-bold">{{ allExpanded ? 'Collapse All' : 'Expand All' }}</span>
+        </button>
+        
+        <!-- Sort Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-lg shadow-lg toggle-btn px-5 py-3 rounded-pill btn-info dropdown-toggle" 
+                  type="button" 
+                  id="sortDropdown" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false">
+            <i class="bi bi-funnel me-2 fs-5"></i>
+            <span class="fs-5 fw-bold">Sort: {{ sortLabels[sortBy] }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg" aria-labelledby="sortDropdown">
+            <li>
+              <a class="dropdown-item" :class="{ active: sortBy === 'all' }" href="#" @click.prevent="setSortBy('all')">
+                <i class="bi bi-list-ul me-2"></i>All Orders
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" :class="{ active: sortBy === 'pending' }" href="#" @click.prevent="setSortBy('pending')">
+                <i class="bi bi-hourglass-split me-2"></i>Pending Only
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" :class="{ active: sortBy === 'preparing' }" href="#" @click.prevent="setSortBy('preparing')">
+                <i class="bi bi-clock-history me-2"></i>Preparing Only
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" :class="{ active: sortBy === 'served' }" href="#" @click.prevent="setSortBy('served')">
+                <i class="bi bi-check-circle me-2"></i>Served Only
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="row g-4">
-        <div v-for="(order, index) in orders" :key="order.id ?? index" class="col-lg-6 col-xl-4">
-          <div class="card order-card shadow-lg h-100 border-0" :style="{ animationDelay: `${index * 0.1}s` }">
-            <div class="card-header-custom">
+        <div v-for="(order, index) in filteredOrders" :key="order.id ?? index" class="col-lg-6 col-xl-4">
+          <div class="card order-card shadow-lg border-0" :style="{ animationDelay: `${index * 0.1}s` }">
+            <!-- Collapsed Header (Always Visible) -->
+            <div class="card-header-custom clickable" @click="toggleExpand(order.id)">
               <div class="d-flex justify-content-between align-items-start">
-                <div>
+                <div class="flex-grow-1">
                   <h4 class="mb-1 text-white fw-bold">
                     <i class="bi bi-receipt me-2"></i>
                     Order #{{ order.id ?? 'N/A' }}
@@ -37,90 +76,91 @@
                     <i class="bi bi-clock me-1"></i>
                     {{ formatTime(order.created_at) }}
                   </small>
+                  <div class="mt-2">
+                    <strong class="text-white fs-5">
+                      <i class="bi bi-person-circle me-2"></i>{{ order.customer_name }}
+                    </strong>
+                  </div>
                 </div>
-                <span class="badge status-badge fs-6" :class="getStatusBadgeClass(order.status)">
-                  <span class="status-dot me-1"></span>
-                  {{ formatStatus(order.status) }}
-                </span>
+                <div class="d-flex flex-column align-items-end gap-2">
+                  <span class="badge status-badge fs-6" :class="getStatusBadgeClass(order.status)">
+                    <span class="status-dot me-1"></span>
+                    {{ formatStatus(order.status) }}
+                  </span>
+                  <button class="btn btn-sm btn-light rounded-circle expand-btn" @click.stop="toggleExpand(order.id)">
+                    <i class="bi transition-transform" :class="expandedOrders.has(order.id) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div class="card-body p-4">
-              <div class="customer-info mb-4 p-3 bg-light rounded-3">
-                <div class="d-flex align-items-center">
-                  <div class="customer-icon me-3">
-                    <i class="bi bi-person-fill"></i>
-                  </div>
-                  <div>
-                    <small class="text-muted d-block fw-semibold">Customer</small>
-                    <strong class="fs-5">{{ order.customer_name }}</strong>
-                  </div>
+            <!-- Expandable Content -->
+            <transition name="expand">
+              <div v-show="expandedOrders.has(order.id)" class="card-body p-4">
+                <h6 class="mb-3 fw-bold text-uppercase text-muted">
+                  <i class="bi bi-bag me-2 fs-5"></i>
+                  Order Items ({{ order.items.length }})
+                </h6>
+
+                <ul class="list-unstyled mb-4 order-items-list">
+                  <li v-for="(item, i) in order.items" :key="i"
+                    class="order-item d-flex justify-content-between align-items-center mb-3 p-3 rounded-3">
+                    <div class="item-info">
+                      <div class="item-name fw-semibold mb-2">
+                        {{ item.item_name ?? item.name ?? 'Unknown Item' }}
+                      </div>
+                      <div class="quantity-badge">
+                        <i class="bi bi-x-lg me-1"></i>
+                        <span class="fw-bold">{{ item.quantity }}</span>
+                      </div>
+                    </div>
+                    <div class="item-price text-end">
+                      <div class="fw-bold fs-5">
+                        ₹{{ (Number(item.price ?? 0) * Number(item.quantity ?? 0)).toFixed(2) }}
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+
+                <div class="total-box d-flex justify-content-between align-items-center mb-4 p-4 bg-success bg-opacity-10 rounded-3">
+                  <h5 class="mb-0 fw-bold text-success">
+                    <i class="bi bi-cash-stack me-2"></i>Total:
+                  </h5>
+                  <h4 class="mb-0 fw-bold text-success">
+                    ₹{{ (order.total ?? order.total_price ?? 0).toFixed(2) }}
+                  </h4>
+                </div>
+
+                <div class="status-buttons d-flex gap-2">
+                  <button class="btn flex-fill py-3 status-btn"
+                    :class="order.status === 'preparing' ? 'btn-warning active' : 'btn-outline-warning'"
+                    @click="updateStatus(order, 'preparing')" 
+                    :disabled="order.status === 'preparing'">
+                    <i class="bi bi-clock-history me-2 fs-5"></i>
+                    <span class="fw-semibold fs-6">Preparing</span>
+                  </button>
+                  <button class="btn flex-fill py-3 status-btn"
+                    :class="order.status === 'served' ? 'btn-success active' : 'btn-outline-success'"
+                    @click="updateStatus(order, 'served')" 
+                    :disabled="order.status === 'served'">
+                    <i class="bi bi-check-circle me-2 fs-5"></i>
+                    <span class="fw-semibold fs-6">Served</span>
+                  </button>
                 </div>
               </div>
-
-              <h6 class="mb-3 fw-bold text-uppercase text-muted">
-                <i class="bi bi-bag me-2 text-primary fs-5"></i>
-                Order Items ({{ order.items.length }})
-              </h6>
-
-              <ul class="list-unstyled mb-4 order-items-list">
-                <li v-for="(item, i) in order.items" :key="i"
-                  class="order-item d-flex justify-content-between align-items-center mb-3 p-3 rounded-3">
-                  <div class="item-info">
-                    <div class="item-name fw-semibold mb-2">
-                      {{ item.item_name ?? item.name ?? 'Unknown Item' }}
-                    </div>
-                    <div class="quantity-badge">
-                      <i class="bi bi-x-lg me-1"></i>
-                      <span class="fw-bold">{{ item.quantity }}</span>
-                    </div>
-                  </div>
-                  <div class="item-price text-end">
-                    <div class="fw-bold text-primary fs-5">
-                      ₹{{ (Number(item.price ?? 0) * Number(item.quantity ?? 0)).toFixed(2) }}
-                    </div>
-                  </div>
-                </li>
-              </ul>
-
-              <div class="total-box d-flex justify-content-between align-items-center mb-4 p-4 bg-success bg-opacity-10 rounded-3">
-                <h5 class="mb-0 fw-bold text-success">
-                  <i class="bi bi-cash-stack me-2"></i>Total:
-                </h5>
-                <h4 class="mb-0 fw-bold text-success">
-                  ₹{{ (order.total ?? order.total_price ?? 0).toFixed(2) }}
-                </h4>
-              </div>
-
-              <div class="status-buttons d-flex gap-2">
-                <button class="btn flex-fill py-3 status-btn"
-                  :class="order.status === 'preparing' ? 'btn-warning active' : 'btn-outline-warning'"
-                  @click="updateStatus(order, 'preparing')" 
-                  :disabled="order.status === 'preparing'">
-                  <i class="bi bi-clock-history me-2 fs-5"></i>
-                  <span class="fw-semibold fs-6">Preparing</span>
-                </button>
-                <button class="btn flex-fill py-3 status-btn"
-                  :class="order.status === 'served' ? 'btn-success active' : 'btn-outline-success'"
-                  @click="updateStatus(order, 'served')" 
-                  :disabled="order.status === 'served'">
-                  <i class="bi bi-check-circle me-2 fs-5"></i>
-                  <span class="fw-semibold fs-6">Served</span>
-                </button>
-              </div>
-            </div>
+            </transition>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-if="orders.length === 0" class="empty-state">
+      <div v-if="filteredOrders.length === 0" class="empty-state">
         <div class="card shadow-lg border-0 rounded-4 p-5 mx-auto text-center" style="max-width: 600px;">
           <div class="empty-icon mb-4 mx-auto">
             <i class="bi bi-inbox"></i>
           </div>
-          <h3 class="fw-bold mb-3">No Active Orders</h3>
-          <p class="text-muted fs-5 mb-0">All orders have been completed!</p>
+          <h3 class="fw-bold mb-3">{{ sortBy === 'all' ? 'No Active Orders' : `No ${sortLabels[sortBy]} Orders` }}</h3>
+          <p class="text-muted fs-5 mb-0">{{ sortBy === 'all' ? 'All orders have been completed!' : `There are no ${sortBy} orders at the moment.` }}</p>
         </div>
       </div>
     </div>
@@ -128,11 +168,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import api from '../api/axios'
 
 const orders = ref([])
 const allowOrders = ref(true)
+const expandedOrders = ref(new Set())
+const allExpanded = ref(false)
+const sortBy = ref('all')
+
+const sortLabels = {
+  all: 'All Orders',
+  pending: 'Pending',
+  preparing: 'Preparing',
+  served: 'Served'
+}
+
+const filteredOrders = computed(() => {
+  if (sortBy.value === 'all') {
+    return orders.value
+  }
+  return orders.value.filter(order => order.status === sortBy.value)
+})
+
+const setSortBy = (status) => {
+  sortBy.value = status
+}
+
+const toggleExpand = (orderId) => {
+  if (expandedOrders.value.has(orderId)) {
+    expandedOrders.value.delete(orderId)
+  } else {
+    expandedOrders.value.add(orderId)
+  }
+  // Trigger reactivity
+  expandedOrders.value = new Set(expandedOrders.value)
+  // Update allExpanded state
+  allExpanded.value = expandedOrders.value.size === orders.value.length
+}
+
+const toggleAllOrders = () => {
+  if (allExpanded.value) {
+    // Collapse all
+    expandedOrders.value.clear()
+    allExpanded.value = false
+  } else {
+    // Expand all (only filtered orders)
+    filteredOrders.value.forEach(order => {
+      expandedOrders.value.add(order.id)
+    })
+    allExpanded.value = true
+  }
+  // Trigger reactivity
+  expandedOrders.value = new Set(expandedOrders.value)
+}
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
@@ -169,6 +258,7 @@ const fetchOrders = async () => {
       customer_name: order.customer ?? 'Unknown',
       items: order.order_items ?? []
     }))
+    checkAutoToggle()
   } catch (error) {
     console.error('❌ Error fetching orders:', error)
     orders.value = []
@@ -203,6 +293,26 @@ const toggleGlobalOrders = async () => {
   }
 };
 
+const checkAutoToggle = async () => {
+  const pendingOrders = orders.value.filter(order => order.status === 'pending')
+  const pendingCount = pendingOrders.length
+
+  console.log(`📦 Pending Orders: ${pendingCount}`)
+
+  if (pendingCount >= 20 && allowOrders.value) {
+    console.log('🚫 Too many pending orders — auto disabling new orders...')
+    await toggleGlobalOrders(false)
+  }
+  else if (pendingCount < 20 && !allowOrders.value) {
+    console.log('✅ Pending orders below limit — auto enabling new orders...')
+    await toggleGlobalOrders(true)
+  }
+}
+
+const pendingCount = computed(() => {
+  return orders.value.filter(order => order.status === 'pending').length
+})
+
 onMounted(() => {
   fetchOrders()
   fetchGlobalOrders()
@@ -210,8 +320,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+
 .orders-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16171f;
   min-height: 100vh;
   position: relative;
   overflow: hidden;
@@ -309,6 +421,8 @@ onMounted(() => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: slideUp 0.5s ease-out forwards;
   opacity: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -323,14 +437,25 @@ onMounted(() => {
 }
 
 .order-card:hover {
-  transform: translateY(-12px) scale(1.02);
+  transform: translateY(-8px) scale(1.01);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
 }
 
 .card-header-custom {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   padding: 1.5rem;
   position: relative;
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  color: #fff;
+}
+
+.card-header-custom.clickable:hover {
+  background: linear-gradient(135deg, #2f2f34 0%, #322d37 100%);
+}
+
+.card-header-custom.clickable {
+  cursor: pointer;
 }
 
 .card-header-custom::before {
@@ -342,6 +467,51 @@ onMounted(() => {
   bottom: 0;
   background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
   pointer-events: none;
+}
+
+/* Expand button */
+.expand-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.expand-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.expand-btn i {
+  transition: transform 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Expand/Collapse Animation */
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  max-height: 2000px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Status badge */
@@ -368,30 +538,7 @@ onMounted(() => {
   50% { opacity: 0.5; }
 }
 
-/* Customer info */
-.customer-info {
-  border: 2px solid #e9ecef;
-  transition: all 0.2s ease;
-}
-
-.customer-info:hover {
-  border-color: #667eea;
-  transform: scale(1.02);
-}
-
-.customer-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-}
-
-
+/* Order items */
 .order-item {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
@@ -414,7 +561,7 @@ onMounted(() => {
 .quantity-badge {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   color: white;
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
@@ -517,5 +664,39 @@ onMounted(() => {
   .status-btn {
     width: 100%;
   }
+}
+
+/* Dropdown styling */
+.dropdown-menu {
+  border-radius: 1rem;
+  border: none;
+  padding: 0.5rem;
+  min-width: 220px;
+}
+
+.dropdown-item {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
+  color: white;
+  transform: translateX(4px);
+}
+
+.dropdown-item.active {
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
+  color: white;
+}
+
+.dropdown-item i {
+  width: 20px;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
 }
 </style>

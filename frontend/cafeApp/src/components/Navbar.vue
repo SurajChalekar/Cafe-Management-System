@@ -1,9 +1,9 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow">
+  <nav class="navbar navbar-expand-lg fixed-top shadow" style="background-color: #f5fefd;">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">
-        <i class="bi bi-cup-hot-fill me-2"></i>
-        MyCafe
+        <img src="@/assets/logo/images.jpeg" alt="Cafe Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+        CafeApp
       </a>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -12,51 +12,52 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+        <!-- Centered Navigation Container -->
+        <div class="nav-center-wrapper">
+          <ul class="navbar-nav">
+            <!-- Consumer Navigation -->
+            <template v-if="authStore.isConsumer">
+              <li class="nav-item">
+                <router-link class="nav-link" to="/menu" active-class="active">
+                  Menu
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/place-order" active-class="active">
+                  Place Order
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/my-orders" active-class="active">
+                  My Orders
+                </router-link>
+              </li>
+            </template>
 
-          <!-- Consumer Navigation -->
-          <template v-if="authStore.isConsumer">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/menu" active-class="active">
-                <i class="bi bi-card-list me-1"></i>
-                Menu
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/place-order" active-class="active">
-                <i class="bi bi-cart-plus me-1"></i>
-                Place Order
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/my-orders" active-class="active">
-                <i class="bi bi-bag-check me-1"></i>
-                My Orders
-              </router-link>
-            </li>
-          </template>
+            <!-- Staff Navigation -->
+            <template v-if="authStore.isStaff">
+              <li class="nav-item">
+                <router-link class="nav-link" to="/orders" active-class="active">
+                  <i class="bi bi-list-check me-1"></i>
+                  Orders
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/edit-menu" active-class="active">
+                  <i class="bi bi-pencil-square me-1"></i>
+                  Edit Menu
+                </router-link>
+              </li>
+            </template>
+          </ul>
+        </div>
 
-          <!-- Staff Navigation -->
-          <template v-if="authStore.isStaff">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/orders" active-class="active">
-                <i class="bi bi-list-check me-1"></i>
-                Orders
-              </router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/edit-menu" active-class="active">
-                <i class="bi bi-pencil-square me-1"></i>
-                Edit Menu
-              </router-link>
-            </li>
-          </template>
-          <!-- User Info and Logout -->
+        <!-- User Profile - Right Side -->
+        <ul class="navbar-nav profile-nav">
           <li class="nav-item dropdown" v-if="authStore.isAuthenticated">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+            <a class="nav-link d-flex align-items-center" href="#" id="userDropdown" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle me-2 fs-5"></i>
-              <span>{{ authStore.username || 'User' }}</span>
+              <i class="bi bi-person-circle fs-4"></i>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
@@ -113,40 +114,70 @@ const logoutUser = async () => {
 
 <style scoped>
 .navbar {
-  background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%) !important;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 2.5rem;
+  min-height: 80px;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-center-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.profile-nav {
+  margin-left: auto;
 }
 
 .navbar-brand {
   font-weight: 600;
-  font-size: 1.5rem;
-  color: #fff;
+  font-size: 1.8rem;
+  color: #000000;
   letter-spacing: 0.5px;
 }
 
 .navbar-brand i {
-  color: #667eea;
+  color: #626262;
+  font-size: 2rem;
 }
 
 .nav-link {
   transition: all 0.3s ease;
-  margin: 0 8px;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  margin: 0 12px;
+  padding: 0.6rem 1.2rem;
   font-weight: 500;
+  font-size: 1.1rem;
+  position: relative;
+  color: #000000 !important;
 }
 
-.nav-link:hover {
-  transform: translateY(-2px);
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea !important;
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #000000;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 80%;
 }
 
 .nav-link.active {
-  color: #667eea !important;
   font-weight: 600;
-  background: rgba(102, 126, 234, 0.15);
+}
+
+.nav-link.active::after {
+  width: 80%;
 }
 
 .dropdown-menu {
@@ -169,5 +200,17 @@ const logoutUser = async () => {
 
 .dropdown-item i {
   color: #667eea;
+}
+
+@media (max-width: 991px) {
+  .nav-center-wrapper {
+    position: static;
+    transform: none;
+    width: 100%;
+  }
+  
+  .profile-nav {
+    margin-left: 0;
+  }
 }
 </style>

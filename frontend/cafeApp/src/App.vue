@@ -52,7 +52,7 @@ body {
 
 /* Space for fixed navbar */
 .main-content {
-  padding-top: 70px;
+  padding-top: 106px;
   min-height: 100vh;
 }
 

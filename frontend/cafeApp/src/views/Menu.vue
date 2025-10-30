@@ -59,12 +59,6 @@
                       <i class="bi bi-arrow-down me-2"></i>Price: High to Low
                     </a>
                   </li>
-                  <li>
-                    <a class="dropdown-item" :class="{ active: sortBy === 'name' }" href="#"
-                      @click.prevent="sortBy = 'name'">
-                      <i class="bi bi-sort-alpha-down me-2"></i>Name (A-Z)
-                    </a>
-                  </li>
                 </ul>
               </div>
             </div>
@@ -117,7 +111,6 @@
             <!-- Content Section -->
             <div class="card-content">
               <h5 class="item-title">{{ item.name }}</h5>
-              <p class="item-description">{{ item.description || 'Delicious menu item' }}</p>
 
               <!-- Add to Cart Section -->
               <div class="card-actions">
@@ -335,7 +328,7 @@ const addToOrder = async item => {
 /* ========== Layout ========== */
 .menu-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16171f;
   position: relative;
 }
 
@@ -400,6 +393,10 @@ const addToOrder = async item => {
   box-shadow: none;
 }
 
+.btn.show{
+  background-color:white
+}
+
 .dropdown {
   position: relative;
   z-index: 100;
@@ -439,7 +436,7 @@ const addToOrder = async item => {
 }
 
 .dropdown-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   color: white;
 }
 
@@ -497,7 +494,7 @@ const addToOrder = async item => {
 
 .category-btn.active {
   background: white;
-  color: #667eea;
+  color: #424242;
   border-color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
@@ -516,7 +513,7 @@ const addToOrder = async item => {
 }
 
 .category-btn.active .category-count {
-  background: #667eea;
+  background: #424242;
   color: white;
 }
 
@@ -606,8 +603,8 @@ const addToOrder = async item => {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #d0d0d0 0%, #898989 100%);
+  color: black;
   padding: 8px 14px;
   border-radius: 20px;
   font-weight: 700;
@@ -712,7 +709,7 @@ const addToOrder = async item => {
 
 .add-btn {
   flex: 1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #191f39 0%, #4b4352 100%);
   color: white;
   border: none;
   border-radius: 10px;

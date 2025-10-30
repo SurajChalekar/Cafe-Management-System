@@ -27,10 +27,10 @@
                 </div>
               </div>
 
-              <div v-else-if="cartItems.length === 0" class="text-center py-5">
+              <div v-else-if="cartItems.length === 0" class="text-center py-5" >
                 <i class="bi bi-cart-x display-1 text-muted mb-3"></i>
                 <h4 class="text-muted">Your cart is empty</h4>
-                <router-link to="/menu" class="btn btn-primary mt-3">
+                <router-link to="/menu" class="btn btn-primary custom-btn mt-3">
                   <i class="bi bi-card-list me-2"></i>
                   View Menu
                 </router-link>
@@ -348,22 +348,41 @@ onMounted(() => {
 <style scoped>
 .order-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #16171f;
 }
 
 .card {
   background: rgba(255, 255, 255, 0.95);
 }
 
-.card-header {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+.card-header {  
+  background: #424242 !important;
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: #424242;
   border: none;
 }
-
+.btn-primary:hover {
+  background-color: #4f545a; /* new hover color */
+  border-color: #51555a;
+  transform: scale(1.05); /* optional hover zoom effect */
+}
+.custom-btn.router-link-active {
+  background-color: #343a40; /* darker pressed color */
+  border-color: #343a40;
+  transform: scale(0.97); /* slight press-in effect */
+  box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.25);
+}
+.custom-btn {
+  background-color: #555c67; /* normal state */
+  border-color: #3e4248;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+.custom-btn:active {
+  background: linear-gradient(135deg, #2b3035 0%, #1d2125 100%);
+  transform: scale(0.95);
+}
 .modal-overlay {
   position: fixed;
   top: 0;
